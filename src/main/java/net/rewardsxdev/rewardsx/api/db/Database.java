@@ -5,6 +5,7 @@ import net.rewardsxdev.rewardsx.api.db.entity.*;
 import net.rewardsxdev.rewardsx.api.features.jobs.PlayerJobProgress;
 import org.apache.commons.lang.RandomStringUtils;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -412,6 +413,13 @@ public interface Database {
      * @throws SQLException If a database access error occurs.
      */
     void saveAfkReward(AfkReward s) throws SQLException;
+
+    /**
+     * Get Database Connection.
+     *
+     * @throws SQLException If a database access error occurs.
+     */
+    Connection getConnection() throws SQLException;
 
     /**
      * Save or update a Playtime reward for a player.

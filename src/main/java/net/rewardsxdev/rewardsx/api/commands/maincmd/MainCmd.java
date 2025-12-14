@@ -10,12 +10,13 @@ import net.rewardsxdev.rewardsx.api.player.RPlayer;
 import net.rewardsxdev.rewardsx.api.spigot.configuration.Language;
 import net.rewardsxdev.rewardsx.api.support.papi.SupportPAPI;
 import net.rewardsxdev.rewardsx.api.utils.globalpaths.MessagesPath;
+import org.bukkit.command.Command;
 
 import java.util.*;
 
 public final class MainCmd {
 
-    private final Map<String, SubCmd> subCmds = new HashMap<>();
+    private static final Map<String, SubCmd> subCmds = new HashMap<>();
     @Getter
     public static API api;
     @Getter
@@ -38,10 +39,10 @@ public final class MainCmd {
     /**
      * Entry-point unico: chiamato dagli adapter Spigot/Bungee/Velocity.
      */
-    public boolean onCommand(RPlayer sender, String[] args) {
+    public boolean onCommand(RPlayer sender, String label, String[] args) {
 
         if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            helper(sender);
+            helper(sender, label);
             return true;
         }
 
@@ -58,7 +59,7 @@ public final class MainCmd {
 
         if (sub == null) {
             sender.sendMessage(SupportPAPI.getSupportPAPI().replace(sender, Language.getMsg(sender, MessagesPath.MESSAGES_COMMANDS_SUB_UNKNOWN)));
-            helper(sender);
+            helper(sender, label);
             return true;
         }
 
@@ -72,11 +73,11 @@ public final class MainCmd {
         String[] remaining = java.util.Arrays.copyOfRange(args, 1, args.length);
         boolean ok = sub.execute(sender, remaining);
 
-        if (!ok) sender.sendMessage("§eSyntax Error. Try /rewardsx " + subName + " help");
+        if (!ok) sender.sendMessage("§eSyntax Error. Try /" + label + " " + subName + " help");
         return true;
     }
 
-    private void helper(RPlayer sender) {
+    private void helper(RPlayer sender, String label) {
         List<String> baseLines = Language.getList(sender, MessagesPath.MESSAGES_COMMANDS_HELP);
 
         Set<String> mainCommands = new HashSet<>();
@@ -94,7 +95,7 @@ public final class MainCmd {
                     if (perm == null || perm.isEmpty() || sender.hasPermission(perm)) {
                         String formatted = line
                                 .replace("%software%", softwareType)
-                                .replace("%cmd%", "rewardsx " + cmd.name())
+                                .replace("%cmd%",label + " " + cmd.name())
                                 .replace("%description%", Language.getMsg(sender, cmd.description()));
                         sender.sendMessage(formatted);
                     }
@@ -104,6 +105,18 @@ public final class MainCmd {
                         .replace("%software%", softwareType)
                         .replace("%v%", adapter.getPluginVersion()));
             }
+        }
+    }
+
+    /**
+     * Registry a new subcmd.
+     */
+    public static void registerSubCommand(SubCmd cmd) {
+        String name = cmd.name().toLowerCase();
+        subCmds.put(name, cmd);
+
+        for (String alias : cmd.getAliases(cmd)) {
+            subCmds.put(alias.toLowerCase(), cmd);
         }
     }
 

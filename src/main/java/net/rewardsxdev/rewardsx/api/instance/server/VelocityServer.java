@@ -4,6 +4,7 @@ import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.rewardsxdev.rewardsx.api.player.RPlayer;
 import net.rewardsxdev.rewardsx.api.instance.RServer;
+import net.rewardsxdev.rewardsx.api.player.RPlayerOffline;
 import net.rewardsxdev.rewardsx.api.player.velocity.VelocitySender;
 
 import java.util.UUID;
@@ -40,6 +41,16 @@ public final class VelocityServer implements RServer {
                 .orElse(null);
     }
 
+    @Override
+    public RPlayerOffline getOfflinePlayer(String name) {
+        return null;
+    }
+
+    @Override
+    public RPlayerOffline getOfflinePlayer(UUID uuid) {
+        return null;
+    }
+
 
     @Override
     public void runSync(Runnable task) {
@@ -52,7 +63,7 @@ public final class VelocityServer implements RServer {
     public void dispatchConsoleCommand(String cmd) {
         proxy.getCommandManager().executeAsync(proxy.getConsoleCommandSource(), cmd);
     }
-
+    @Override
     public void registerEvents(Object... listeners) {
         for (Object listener : listeners) {
             events.register(proxy.getPluginManager().getPlugin("RewardsX_Velocity"), listener);  // Velocity accepts raw Object

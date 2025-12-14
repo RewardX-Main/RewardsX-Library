@@ -5,6 +5,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.rewardsxdev.rewardsx.api.player.RPlayer;
 import net.rewardsxdev.rewardsx.api.instance.RServer;
+import net.rewardsxdev.rewardsx.api.player.RPlayerOffline;
 import net.rewardsxdev.rewardsx.api.player.bungee.BungeeSender;
 
 import java.util.UUID;
@@ -37,6 +38,16 @@ public final class BungeeServer implements RServer {
     }
 
     @Override
+    public RPlayerOffline getOfflinePlayer(String name) {
+        return null;
+    }
+
+    @Override
+    public RPlayerOffline getOfflinePlayer(UUID uuid) {
+        return null;
+    }
+
+    @Override
     public void runSync(Runnable task) {
         proxy.getScheduler().runAsync(proxy.getPluginManager().getPlugin("RewardsX_Bungee"), task);
         // se usi un altro nome di plugin, cambialo di conseguenza
@@ -46,12 +57,19 @@ public final class BungeeServer implements RServer {
     public void dispatchConsoleCommand(String cmd) {
         proxy.getPluginManager().dispatchCommand(proxy.getConsole(), cmd);
     }
-    public void registerEvents(Listener... listeners) {
-        for(Listener l : listeners) {
-            proxy
-                    .getPluginManager()
-                    .registerListener(proxy.getPluginManager().getPlugin("RewardsX_Bungee"), l);   // var-args helper added in 2021
-
+    @Override
+    public void registerEvents(Object... listeners) {
+        for (Object obj : listeners) {
+            if (obj instanceof Listener) {
+                Listener l = (Listener) obj;
+                proxy.getPluginManager().registerListener(
+                        proxy.getPluginManager().getPlugin("RewardsX_Bungee"),
+                        l
+                );
+            } else {
+                proxy.getLogger().warning("[RewardsX] Tried to register non-listener object: " + obj);
+            }
         }
     }
+
 }

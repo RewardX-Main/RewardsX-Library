@@ -33,6 +33,9 @@ public interface API {
     String STREAK_PATH = "/Streak";
     String MESSAGES_PATH = "/Lang";
 
+    String cmd = "rewardsx";
+    String cmdAlias = "rx";
+
     void copyResource(Class<?> resourceOwner, String resourcePath, File destination);
 
     void logAddOnBanner(String name, boolean enabling);
